@@ -12,7 +12,7 @@ const authSchema = new Schema(
     password: {
       type: String,
       required: true,
-      minLength: [10, "min"],
+      minLength: 6,
     },
     email: {
       type: String,
@@ -47,8 +47,12 @@ const loginSchema = Joi.object({
   password: Joi.string().required().min(6),
 });
 
+const subscriptionSchema = Joi.object({
+  subscription: Joi.valid(...Object.values(subscriptionEnum)),
+});
+
 const User = model("user", authSchema);
 
-const schemas = { registerSchema, loginSchema };
+const schemas = { registerSchema, loginSchema, subscriptionSchema };
 
 module.exports = { User, schemas };

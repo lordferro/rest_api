@@ -14,9 +14,7 @@ const register = async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = await User.create({ ...req.body, password: hashedPassword });
-
-  console.log(newUser._id);
+  await User.create({ ...req.body, password: hashedPassword });
 
   res.status(201).json({ email });
 };
@@ -42,8 +40,8 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-    const { _id } = req.user;
-    await User.findByIdAndUpdate(_id, { token: null });
+  const { _id } = req.user;
+  await User.findByIdAndUpdate(_id, { token: null });
 
   res.status(204).json({});
 };
@@ -54,9 +52,29 @@ const getCurrent = async (req, res) => {
   res.status(200).json({ email, subscription });
 };
 
+const updateSubscription = async (req, res, next) => {
+  const { subscription: newSubscription } = req.body;
+  const { _id } = req.user;
+  const { subscription } = req.user;
+
+  if (newSubscription === subscription)
+    throw HttpError(400, "This is current subscription");
+
+  const result = await User.findByIdAndUpdate(
+    _id,
+    {
+      subscription: newSubscription,
+    },
+    { new: true }
+  );
+
+  res.status(200).json({ result });
+};
+
 module.exports = {
   register: CtrlWrapper(register),
   login: CtrlWrapper(login),
   logout: CtrlWrapper(logout),
   getCurrent: CtrlWrapper(getCurrent),
+  updateSubscription: CtrlWrapper(updateSubscription),
 };

@@ -17,6 +17,7 @@ const getAll = async (req, res) => {
     skip,
     limit,
   }).populate("owner", "email");
+  
   if (!result) {
     throw HttpError(404, "not found");
   }
