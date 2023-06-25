@@ -9,15 +9,17 @@ const getAll = async (req, res) => {
 
   const query = { owner, ...req.query };
 
-  const result = await Contact.find(query)
+  const data = await Contact.find(query)
     .skip(skip)
     .limit(limit)
     .populate("owner", "email");
 
-  if (!result) {
+  const total = await Contact.count(query);
+  console.log(total)
+  if (!data) {
     throw HttpError(404, "not found");
   }
-  res.json(result);
+  res.json({data, total});
 };
 
 const getById = async (req, res) => {
