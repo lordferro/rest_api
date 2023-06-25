@@ -3,15 +3,11 @@ const { CtrlWrapper, HttpError } = require("../helpers");
 
 const getAll = async (req, res) => {
   const { _id: owner } = req.user;
-  const { page = 1, limit = 10, favorite = null } = req.query;
+  const { page = 1, limit = 10 } = req.query;
 
   const skip = (page - 1) * limit;
 
-  const query = { owner };
-
-  if (favorite) {
-    query.favorite = favorite;
-  }
+  const query = { owner, ...req.query };
 
   const result = await Contact.find(query, null, {
     skip,
