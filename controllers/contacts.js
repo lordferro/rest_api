@@ -15,7 +15,7 @@ const getAll = async (req, res) => {
     .populate("owner", "email");
 
   const total = await Contact.count(query);
-  console.log(total)
+
   if (!data) {
     throw HttpError(404, "not found");
   }
