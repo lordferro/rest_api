@@ -12,7 +12,6 @@ const authSchema = new Schema(
     password: {
       type: String,
       required: true,
-      minLength: 6,
     },
     email: {
       type: String,
