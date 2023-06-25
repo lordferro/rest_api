@@ -1,15 +1,30 @@
 const { Contact } = require("../models/contacts");
 const { CtrlWrapper, HttpError } = require("../helpers");
 
-const getAll = async (req, res, next) => {
-  const result = await Contact.find();
+const getAll = async (req, res) => {
+  const { _id: owner } = req.user;
+  const { page = 1, limit = 10, favorite = null } = req.query;
+
+  const skip = (page - 1) * limit;
+
+  const query = { owner };
+
+  if (favorite) {
+    query.favorite = favorite;
+  }
+
+  const result = await Contact.find(query, null, {
+    skip,
+    limit,
+  }).populate("owner", "email");
+  
   if (!result) {
     throw HttpError(404, "not found");
   }
   res.json(result);
 };
 
-const getById = async (req, res, next) => {
+const getById = async (req, res) => {
   const { id } = req.params;
   const result = await Contact.findById(id);
   if (!result) {
@@ -18,12 +33,13 @@ const getById = async (req, res, next) => {
   res.json(result);
 };
 
-const add = async (req, res, next) => {
-  const result = await Contact.create(req.body);
+const add = async (req, res) => {
+  const { _id: owner } = req.user;
+  const result = await Contact.create({ ...req.body, owner });
   res.json(result);
 };
 
-const editById = async (req, res, next) => {
+const editById = async (req, res) => {
   const { id } = req.params;
   const result = await Contact.findByIdAndUpdate(id, req.body, { new: true });
   if (!result) {
@@ -32,7 +48,7 @@ const editById = async (req, res, next) => {
   res.json(result);
 };
 
-const removeById = async (req, res, next) => {
+const removeById = async (req, res) => {
   const { id } = req.params;
   const result = await Contact.findByIdAndRemove(id);
   if (!result) {
@@ -40,7 +56,7 @@ const removeById = async (req, res, next) => {
   }
   res.json("Deleted.");
 };
-const updateFavorite = async (req, res, next) => {
+const updateFavorite = async (req, res) => {
   const { id } = req.params;
   const result = await Contact.findByIdAndUpdate(id, req.body, { new: true });
   if (!result) {
