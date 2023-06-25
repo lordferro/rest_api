@@ -9,11 +9,11 @@ const getAll = async (req, res) => {
 
   const query = { owner, ...req.query };
 
-  const result = await Contact.find(query, null, {
-    skip,
-    limit,
-  }).populate("owner", "email");
-  
+  const result = await Contact.find(query)
+    .skip(skip)
+    .limit(limit)
+    .populate("owner", "email");
+
   if (!result) {
     throw HttpError(404, "not found");
   }
