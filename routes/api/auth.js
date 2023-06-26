@@ -1,8 +1,8 @@
 const express = require("express");
 const ctrl = require("../../controllers/auth.js");
-const validateBody = require("../../middelwares/validateBody.js");
+const validateBody = require("../../middlewares/validateBody.js");
 const { schemas } = require("../../models/user.js");
-const authenticate = require("../../middelwares/authenticate.js");
+const authenticate = require("../../middlewares/authenticate.js");
 
 const router = express.Router();
 
