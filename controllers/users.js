@@ -1,6 +1,5 @@
 const { CtrlWrapper, HttpError } = require("../helpers");
 const { User } = require("../models/users");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const gravatar = require("gravatar");
 const path = require("path");
@@ -17,11 +16,9 @@ const register = async (req, res) => {
 
   if (user) throw HttpError(409, "email is already in use");
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-
   const avatarURL = gravatar.url(email);
 
-  await User.create({ ...req.body, password: hashedPassword, avatarURL });
+  await User.create({ ...req.body, password: password, avatarURL });
 
   res.status(201).json({ email });
 };
@@ -101,8 +98,9 @@ const changePassword = async (req, res) => {
   if (!(await user.checkPassword(password, user.password)))
     throw HttpError(401, "wrong credentials");
 
-  user.password = await user.hashPassword(newPassword);
+  user.password = newPassword;
   await user.save();
+  console.log(user)
 
   res.json({ message: "password changed" });
 };
