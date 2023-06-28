@@ -49,6 +49,8 @@ const registerSchema = Joi.object({
 const loginSchema = Joi.object({
   email: Joi.string().required().pattern(emailRegex),
   password: Joi.string().required().min(6),
+  newPassword: Joi.string().min(6),
+  
 });
 
 const subscriptionSchema = Joi.object({
@@ -56,7 +58,10 @@ const subscriptionSchema = Joi.object({
 });
 
 // Custom method
-authSchema.methods.checkPassword = (candidate, hash) => bcrypt.compare(candidate, hash)
+
+authSchema.methods.checkPassword = (candidate, hash) =>
+  bcrypt.compare(candidate, hash);
+authSchema.methods.hashPassword = (password) => bcrypt.hash(password, 10);
 
 const User = model("user", authSchema);
 

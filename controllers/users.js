@@ -33,7 +33,7 @@ const login = async (req, res) => {
   if (!user) throw HttpError(400);
 
   if (!(await user.checkPassword(password, user.password)))
-    throw HttpError(401);
+    throw HttpError(401, "wrong credentials");
 
   const payload = {
     id: user._id,
@@ -93,6 +93,20 @@ const updateAvatar = async (req, res) => {
   res.json({ avatarURL });
 };
 
+const changePassword = async (req, res) => {
+  const { password, newPassword } = req.body;
+
+  const user = await User.findById(req.user.id);
+
+  if (!(await user.checkPassword(password, user.password)))
+    throw HttpError(401, "wrong credentials");
+
+  user.password = await user.hashPassword(newPassword);
+  await user.save();
+
+  res.json({ message: "password changed" });
+};
+
 module.exports = {
   register: CtrlWrapper(register),
   login: CtrlWrapper(login),
@@ -100,4 +114,5 @@ module.exports = {
   getCurrent: CtrlWrapper(getCurrent),
   updateSubscription: CtrlWrapper(updateSubscription),
   updateAvatar: CtrlWrapper(updateAvatar),
+  changePassword: CtrlWrapper(changePassword),
 };
