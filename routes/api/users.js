@@ -3,8 +3,7 @@ const ctrl = require("../../controllers/users.js");
 const {
   validateBody,
   authenticate,
-  upload,
-  picturesManipulations,
+  uploadUserAvatar,
 } = require("../../middlewares/");
 const { schemas } = require("../../models/users.js");
 
@@ -32,12 +31,6 @@ router.patch(
   ctrl.changePassword
 );
 
-router.patch(
-  "/avatars",
-  authenticate,
-  upload,
-  picturesManipulations,
-  ctrl.updateAvatar
-);
+router.patch("/avatars", authenticate, uploadUserAvatar, ctrl.updateAvatar);
 
 module.exports = router;

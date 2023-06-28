@@ -36,6 +36,7 @@ const authSchema = new Schema(
   },
   { versionKey: false }
 );
+
 authSchema.pre("save", async function (next) {
   if (this.isNew) {
     const emailHash = crypto.createHash("md5").update(this.email).digest("hex");

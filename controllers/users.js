@@ -1,10 +1,11 @@
 const { CtrlWrapper, HttpError } = require("../helpers");
 const { User } = require("../models/users");
 const jwt = require("jsonwebtoken");
-const path = require("path");
-const fs = require("fs/promises");
+// const path = require("path");
+// const fs = require("fs/promises");
+const ImageService = require("../services/imageService");
 
-const avatarPath = path.join(__dirname, "../", "public", "avatars");
+// const avatarPath = path.join(__dirname, "../", "public", "avatars");
 
 const { SECRET_KEY } = process.env;
 
@@ -75,20 +76,21 @@ const updateSubscription = async (req, res) => {
   res.status(200).json({ result });
 };
 
-const updateAvatar = async (req, res) => {
-  const { _id } = req.user;
-  const { path: tempPath, filename } = req.file;
+const updateAvatar = async (req, res, next) => {
+  const { user, file } = req;
 
-  const resultUpload = path.join(avatarPath, filename);
+  if (file) {
+    user.avatarURL = await ImageService.save(
+      file,
+      { width: 250, height: 250 },
+      "avatars"
+    );
+  }
 
-  await fs.rename(tempPath, resultUpload);
-
-  const avatarURL = path.join("avatars", filename);
-  await User.findByIdAndUpdate(_id, { avatarURL });
-  
-
+  const avatarURL = await user.save();
   res.json({ avatarURL });
 };
+
 
 const changePassword = async (req, res) => {
   const { password, newPassword } = req.body;
