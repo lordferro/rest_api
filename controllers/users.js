@@ -91,7 +91,6 @@ const updateAvatar = async (req, res, next) => {
   res.json({ avatarURL });
 };
 
-
 const changePassword = async (req, res) => {
   const { password, newPassword } = req.body;
 
