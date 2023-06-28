@@ -32,8 +32,8 @@ const login = async (req, res) => {
   const user = await User.findOne({ email });
   if (!user) throw HttpError(400);
 
-  const comparePassword = await bcrypt.compare(password, user.password);
-  if (!comparePassword) throw HttpError(401);
+  if (!(await user.checkPassword(password, user.password)))
+    throw HttpError(401);
 
   const payload = {
     id: user._id,

@@ -2,6 +2,7 @@ const { Schema, model } = require("mongoose");
 const Joi = require("joi");
 const subscriptionEnum = require("../constants/subscriptionEnum");
 const { handleMongooseError } = require("../helpers");
+const bcrypt = require("bcrypt");
 
 const emailRegex =
   // eslint-disable-next-line no-useless-escape
@@ -53,6 +54,9 @@ const loginSchema = Joi.object({
 const subscriptionSchema = Joi.object({
   subscription: Joi.valid(...Object.values(subscriptionEnum)).required(),
 });
+
+// Custom method
+authSchema.methods.checkPassword = (candidate, hash) => bcrypt.compare(candidate, hash)
 
 const User = model("user", authSchema);
 
