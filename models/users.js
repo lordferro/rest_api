@@ -51,7 +51,7 @@ const loginSchema = Joi.object({
 });
 
 const subscriptionSchema = Joi.object({
-  subscription: Joi.valid(...Object.values(subscriptionEnum)),
+  subscription: Joi.valid(...Object.values(subscriptionEnum)).required(),
 });
 
 const User = model("user", authSchema);
