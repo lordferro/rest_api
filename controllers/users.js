@@ -77,8 +77,9 @@ const updateSubscription = async (req, res) => {
 
 const updateAvatar = async (req, res) => {
   const { _id } = req.user;
-  const { path: tempPath, originalname } = req.file;
-  const filename = `${_id}_${originalname}`;
+  const { path: tempPath, filename } = req.file;
+  console.log(req.file)
+
   const resultUpload = path.join(avatarPath, filename);
 
   await fs.rename(tempPath, resultUpload);

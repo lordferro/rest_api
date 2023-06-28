@@ -1,15 +1,24 @@
 const multer = require("multer");
 const path = require("path");
+const {nanoid} = require("nanoid");
 
 const tempDir = path.join(__dirname, "../", "temp");
 
 const multerConfig = multer.diskStorage({
   destination: tempDir,
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
+  filename: (req, file, cb) => {
+    const extension = file.mimetype.split("/")[1];
+
+    cb(null, `${req.user.id}-${nanoid()}.${extension}`);
   },
 });
 
-const upload = multer({ storage: multerConfig });
+// const multerFilter = (req, file, cb) => {};
+
+const upload = multer({
+  storage: multerConfig,
+  // fileFilter: multerFilter,
+  limits: { fileSize: 2 * 1024 * 1024 },
+}).single("avatar");
 
 module.exports = upload;

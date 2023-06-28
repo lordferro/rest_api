@@ -7,8 +7,8 @@ const picturesManipulations = async (req, res, next) => {
   Jimp.read(path, (err, pic) => {
     if (err) throw HttpError(400);
     pic.resize(250, Jimp.AUTO).write(path);
+    next();
   });
-    next()
 };
 
 module.exports = picturesManipulations;
