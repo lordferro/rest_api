@@ -1,6 +1,7 @@
 const multer = require("multer");
 const path = require("path");
 const {nanoid} = require("nanoid");
+const { HttpError } = require("../helpers");
 
 const tempDir = path.join(__dirname, "../", "temp");
 
@@ -13,11 +14,17 @@ const multerConfig = multer.diskStorage({
   },
 });
 
-// const multerFilter = (req, file, cb) => {};
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true)
+  } else {
+    cb(HttpError(400, "please upload image"), false)
+  }
+};
 
 const upload = multer({
   storage: multerConfig,
-  // fileFilter: multerFilter,
+  fileFilter: multerFilter,
   limits: { fileSize: 2 * 1024 * 1024 },
 }).single("avatar");
 
