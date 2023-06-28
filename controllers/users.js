@@ -1,7 +1,6 @@
 const { CtrlWrapper, HttpError } = require("../helpers");
 const { User } = require("../models/users");
 const jwt = require("jsonwebtoken");
-const gravatar = require("gravatar");
 const path = require("path");
 const fs = require("fs/promises");
 
@@ -16,9 +15,7 @@ const register = async (req, res) => {
 
   if (user) throw HttpError(409, "email is already in use");
 
-  const avatarURL = gravatar.url(email);
-
-  await User.create({ ...req.body, password: password, avatarURL });
+  await User.create({ ...req.body, password });
 
   res.status(201).json({ email });
 };
@@ -56,6 +53,9 @@ const getCurrent = async (req, res) => {
   res.status(200).json({ email, subscription });
 };
 
+/**
+ * change subscription of currently logged in user
+ */
 const updateSubscription = async (req, res) => {
   const { subscription: newSubscription } = req.body;
   const { _id } = req.user;
@@ -100,7 +100,7 @@ const changePassword = async (req, res) => {
 
   user.password = newPassword;
   await user.save();
-  console.log(user)
+  console.log(user);
 
   res.json({ message: "password changed" });
 };
@@ -110,6 +110,9 @@ module.exports = {
   login: CtrlWrapper(login),
   logout: CtrlWrapper(logout),
   getCurrent: CtrlWrapper(getCurrent),
+  /**
+   * change subscription of currently logged in user
+   */
   updateSubscription: CtrlWrapper(updateSubscription),
   updateAvatar: CtrlWrapper(updateAvatar),
   changePassword: CtrlWrapper(changePassword),

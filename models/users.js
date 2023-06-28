@@ -3,6 +3,7 @@ const Joi = require("joi");
 const subscriptionEnum = require("../constants/subscriptionEnum");
 const { handleMongooseError } = require("../helpers");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 const emailRegex =
   // eslint-disable-next-line no-useless-escape
@@ -31,12 +32,16 @@ const authSchema = new Schema(
     },
     avatarURL: {
       type: String,
-      required: true,
     },
   },
   { versionKey: false }
 );
 authSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    const emailHash = crypto.createHash("md5").update(this.email).digest("hex");
+
+    this.avatarURL = `https://www.gravatar.com/avatar/${emailHash}.jpg?d=retro`
+  }
   if (!this.isModified("password")) return next();
 
   this.password = await bcrypt.hash(this.password, 10);
