@@ -59,7 +59,7 @@ const getCurrent = async (req, res) => {
   res.status(200).json({ email, subscription });
 };
 
-const updateSubscription = async (req, res, next) => {
+const updateSubscription = async (req, res) => {
   const { subscription: newSubscription } = req.body;
   const { _id } = req.user;
   const { subscription } = req.user;
@@ -78,7 +78,7 @@ const updateSubscription = async (req, res, next) => {
   res.status(200).json({ result });
 };
 
-const updateAvatar = async (req, res, next) => {
+const updateAvatar = async (req, res) => {
   const { _id } = req.user;
   const { path: tempPath, originalname } = req.file;
   const filename = `${_id}_${originalname}`;
@@ -87,6 +87,7 @@ const updateAvatar = async (req, res, next) => {
   await fs.rename(tempPath, resultUpload);
 
   const avatarURL = path.join("avatars", filename);
+
   await User.findByIdAndUpdate(_id, { avatarURL });
 
   res.json({ avatarURL });
