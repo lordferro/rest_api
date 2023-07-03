@@ -33,6 +33,8 @@ const authSchema = new Schema(
     avatarURL: {
       type: String,
     },
+    verificationToken: { type: String, default: "" },
+    verify: { type: Boolean, default: false },
   },
   { versionKey: false }
 );
@@ -41,7 +43,7 @@ authSchema.pre("save", async function (next) {
   if (this.isNew) {
     const emailHash = crypto.createHash("md5").update(this.email).digest("hex");
 
-    this.avatarURL = `https://www.gravatar.com/avatar/${emailHash}.jpg?d=retro`
+    this.avatarURL = `https://www.gravatar.com/avatar/${emailHash}.jpg?d=retro`;
   }
   if (!this.isModified("password")) return next();
 
@@ -67,6 +69,10 @@ const subscriptionSchema = Joi.object({
   subscription: Joi.valid(...Object.values(subscriptionEnum)).required(),
 });
 
+const verifyEmail = Joi.object({
+  email: Joi.string().required().pattern(emailRegex),
+});
+
 // Custom method
 
 authSchema.methods.checkPassword = (candidate, hash) =>
@@ -74,6 +80,6 @@ authSchema.methods.checkPassword = (candidate, hash) =>
 
 const User = model("user", authSchema);
 
-const schemas = { registerSchema, loginSchema, subscriptionSchema };
+const schemas = { registerSchema, loginSchema, subscriptionSchema, verifyEmail };
 
 module.exports = { User, schemas };
